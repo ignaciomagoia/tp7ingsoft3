@@ -30,4 +30,39 @@ describe("RegisterForm", () => {
       password: "secret",
     });
   });
+
+  it("muestra un error cuando el email no es v\u00e1lido", async () => {
+    render(<RegisterForm onRegister={jest.fn()} onLogin={jest.fn()} />);
+
+    await act(async () => {
+      await userEvent.type(screen.getByLabelText(/email/i), "usuario-sin-formato");
+      await userEvent.type(screen.getByLabelText(/contrase\u00f1a/i), "pass");
+      await userEvent.click(screen.getByRole("button", { name: /registrar/i }));
+    });
+
+    expect(
+      screen.getByText(/el email no tiene un formato v\u00e1lido/i)
+    ).toBeInTheDocument();
+  });
+
+  it("ejecuta onLogin y reinicia la contrase\u00f1a", async () => {
+    const handleLogin = jest.fn();
+    render(<RegisterForm onRegister={jest.fn()} onLogin={handleLogin} />);
+
+    const emailInput = screen.getByLabelText(/email/i);
+    const passwordInput = screen.getByLabelText(/contrase\u00f1a/i);
+
+    await act(async () => {
+      await userEvent.type(emailInput, "demo@example.com");
+      await userEvent.type(passwordInput, "123456");
+      await userEvent.click(screen.getByRole("button", { name: /iniciar sesi\u00f3n/i }));
+    });
+
+    expect(handleLogin).toHaveBeenCalledWith({
+      email: "demo@example.com",
+      password: "123456",
+    });
+
+    expect(passwordInput).toHaveValue("");
+  });
 });
