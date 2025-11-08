@@ -1,4 +1,4 @@
-package tests
+package handlers
 
 import (
 	"bytes"
@@ -118,4 +118,37 @@ func TestTodoValidationErrors(t *testing.T) {
 	deleteReq := httptest.NewRequest(http.MethodDelete, "/todos/invalid-id", nil)
 	app.router.ServeHTTP(deleteRec, deleteReq)
 	require.Equal(t, http.StatusBadRequest, deleteRec.Code)
+}
+
+func TestClearTodosEndpoint(t *testing.T) {
+	app := newTestApp()
+
+	registerBody, err := json.Marshal(map[string]string{
+		"email":    "tasks@example.com",
+		"password": "secret",
+	})
+	require.NoError(t, err)
+
+	req := httptest.NewRequest(http.MethodPost, "/register", bytes.NewReader(registerBody))
+	req.Header.Set("Content-Type", "application/json")
+	rec := httptest.NewRecorder()
+	app.router.ServeHTTP(rec, req)
+	require.Equal(t, http.StatusCreated, rec.Code)
+
+	createBody, err := json.Marshal(map[string]string{
+		"email": "tasks@example.com",
+		"title": "Primera tarea",
+	})
+	require.NoError(t, err)
+
+	createReq := httptest.NewRequest(http.MethodPost, "/todos", bytes.NewReader(createBody))
+	createReq.Header.Set("Content-Type", "application/json")
+	createRec := httptest.NewRecorder()
+	app.router.ServeHTTP(createRec, createReq)
+	require.Equal(t, http.StatusCreated, createRec.Code)
+
+	clearReq := httptest.NewRequest(http.MethodDelete, "/todos?email=tasks@example.com", nil)
+	clearRec := httptest.NewRecorder()
+	app.router.ServeHTTP(clearRec, clearReq)
+	require.Equal(t, http.StatusOK, clearRec.Code)
 }

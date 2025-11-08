@@ -1,4 +1,4 @@
-name: TP06 - CI Pipeline (Build & Unit Tests)
+name: TP07 - CI Pipeline (Build & Unit Tests)
 
 on:
   push:

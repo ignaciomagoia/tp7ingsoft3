@@ -1,0 +1,58 @@
+name: Backend CI/CD
+
+on:
+  push:
+    branches: ["main", "develop"]
+  pull_request:
+    branches: ["main", "develop"]
+
+jobs:
+  test-backend:
+    name: Test backend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: backend
+
+    steps:
+      - name: Checkout repository
+        # Fetch project sources.
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        # Install Go toolchain pinned to 1.22.
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+
+      - name: Download dependencies
+        # Ensure go.mod/go.sum are tidy for reproducible builds.
+        run: go mod tidy
+
+      - name: Run tests with coverage
+        # Execute backend test suite and capture coverage profile.
+        run: go test ./... -coverprofile=coverage.out
+
+      - name: Show coverage summary
+        # Print per-function coverage breakdown.
+        run: go tool cover -func=coverage.out
+
+      - name: Generate HTML report
+        # Produce a navigable coverage.html for artifact upload.
+        run: go tool cover -html=coverage.out -o coverage.html
+
+      - name: Upload coverage artifact
+        # Preserve both raw profile and HTML report.
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage-report
+          path: |
+            backend/coverage.out
+            backend/coverage.html
+
+      - name: Print total coverage
+        # Echo the aggregated "total: (statements)" line for easy visibility.
+        run: |
+          total_line=$(go tool cover -func=coverage.out | awk '/^total:/ {print}')
+          echo "$total_line"

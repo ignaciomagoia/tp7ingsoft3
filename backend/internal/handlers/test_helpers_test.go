@@ -1,4 +1,4 @@
-package tests
+package handlers
 
 import (
 	"context"
@@ -9,7 +9,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
-	"github.com/ignaciomagoia/tp6ingdesoft/backend/internal/handlers"
 	"github.com/ignaciomagoia/tp6ingdesoft/backend/internal/services"
 )
 
@@ -157,10 +156,10 @@ func newTestApp() *testApp {
 	userService := services.NewUserService(users)
 	todoService := services.NewTodoService(todos, func() time.Time { return fixedTime })
 
-	authHandler := handlers.NewAuthHandler(userService)
-	todoHandler := handlers.NewTodoHandler(todoService)
+	authHandler := NewAuthHandler(userService)
+	todoHandler := NewTodoHandler(todoService)
 
-	router := handlers.SetupRouter(authHandler, todoHandler, handlers.RouterConfig{})
+	router := SetupRouter(authHandler, todoHandler, RouterConfig{})
 
 	return &testApp{
 		router: router,
