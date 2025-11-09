@@ -19,13 +19,13 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }) {
 
   const saveChanges = () => {
     const trimmed = draft.trim();
+    if (onUpdate) {
+      onUpdate(todo.id, trimmed);
+    }
     if (!trimmed) {
       setDraft(todo.title);
       setIsEditing(false);
       return;
-    }
-    if (onUpdate) {
-      onUpdate(todo.id, trimmed);
     }
     setIsEditing(false);
   };
