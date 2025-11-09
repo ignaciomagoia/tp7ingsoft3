@@ -83,6 +83,10 @@ jobs:
       - backend-tests
       - frontend-tests
     runs-on: ubuntu-latest
+    # Solo corremos el análisis cuando tenemos referencia clara a main o PR contra main.
+    if: >
+      github.ref == 'refs/heads/main' ||
+      github.event_name == 'pull_request'
     steps:
       # Checkout completo para que Sonar tenga historial y blame.
       - name: Checkout repository
@@ -103,9 +107,13 @@ jobs:
           name: frontend-coverage-report
           path: frontend/coverage
 
-      # Ejecutar el escaneo de SonarCloud usando el sonar-project.properties del repo.
-      - name: SonarCloud Scan
+      # Ejecutar SonarCloud indicando explícitamente la carpeta base y la rama.
+      - name: Run SonarCloud scan
         uses: SonarSource/sonarcloud-github-action@v2
+        with:
+          projectBaseDir: ${{ github.workspace }}
+          args: >
+            -Dsonar.branch.name=${{ github.ref_name }}
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
