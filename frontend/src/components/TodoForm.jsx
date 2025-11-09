@@ -31,9 +31,10 @@ export default function TodoForm({ onAdd, disabled = false }) {
           onChange={(event) => setTitle(event.target.value)}
           aria-label="Título de la tarea"
           disabled={disabled}
+          data-cy="todo-input"
         />
       </label>
-      <button type="submit" className="btn btn--primary" disabled={disabled}>
+      <button type="submit" className="btn btn--primary" disabled={disabled} data-cy="add-btn">
         Agregar tarea
       </button>
       {error && (

@@ -112,6 +112,23 @@ function App() {
     }
   };
 
+  const handleRenameTodo = async (id, title) => {
+    const trimmed = title.trim();
+    if (!trimmed) {
+      showToast("El título es requerido", "warning");
+      return;
+    }
+
+    try {
+      const response = await updateTodo(id, { title: trimmed });
+      const updated = response.todo ?? response;
+      setTodos((prev) => prev.map((todo) => (todo.id === id ? updated : todo)));
+      showToast("Tarea actualizada", "success");
+    } catch (error) {
+      showToast(error.message, "error");
+    }
+  };
+
   const handleDeleteTodo = async (id) => {
     try {
       await deleteTodo(id);
@@ -159,7 +176,12 @@ function App() {
             {isLoadingTodos ? (
               <p role="status">Cargando tareas...</p>
             ) : (
-              <TodoList todos={todos} onToggle={handleToggleTodo} onDelete={handleDeleteTodo} />
+              <TodoList
+                todos={todos}
+                onToggle={handleToggleTodo}
+                onDelete={handleDeleteTodo}
+                onUpdate={handleRenameTodo}
+              />
             )}
           </section>
         ) : (

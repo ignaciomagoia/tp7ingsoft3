@@ -1,8 +1,37 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
-export default function TodoItem({ todo, onToggle, onDelete }) {
+export default function TodoItem({ todo, onToggle, onDelete, onUpdate }) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [draft, setDraft] = useState(todo.title);
+
+  useEffect(() => {
+    setDraft(todo.title);
+  }, [todo.title]);
+
+  const startEditing = () => {
+    setIsEditing(true);
+  };
+
+  const cancelEditing = () => {
+    setDraft(todo.title);
+    setIsEditing(false);
+  };
+
+  const saveChanges = () => {
+    const trimmed = draft.trim();
+    if (!trimmed) {
+      setDraft(todo.title);
+      setIsEditing(false);
+      return;
+    }
+    if (onUpdate) {
+      onUpdate(todo.id, trimmed);
+    }
+    setIsEditing(false);
+  };
+
   return (
-    <li className="todo-item">
+    <li className="todo-item" data-cy="todo-item">
       <label className="todo-item__content">
         <input
           type="checkbox"
@@ -10,13 +39,50 @@ export default function TodoItem({ todo, onToggle, onDelete }) {
           onChange={() => onToggle(todo.id, todo.completed)}
           aria-label={`Cambiar estado de ${todo.title}`}
         />
-        <span className={todo.completed ? "todo-title todo-title--done" : "todo-title"}>
-          {todo.title}
-        </span>
+        {isEditing ? (
+          <input
+            value={draft}
+            onChange={(event) => setDraft(event.target.value)}
+            aria-label={`Editar tarea ${todo.title}`}
+            data-cy={`edit-input-${todo.id}`}
+          />
+        ) : (
+          <span className={todo.completed ? "todo-title todo-title--done" : "todo-title"}>
+            {todo.title}
+          </span>
+        )}
       </label>
-      <button type="button" className="btn btn--ghost" onClick={() => onDelete(todo.id)}>
-        Eliminar
-      </button>
+      <div className="todo-item__actions">
+        {isEditing ? (
+          <>
+            <button
+              type="button"
+              className="btn btn--primary"
+              onClick={saveChanges}
+              data-cy={`save-${todo.id}`}
+            >
+              Guardar
+            </button>
+            <button type="button" className="btn btn--ghost" onClick={cancelEditing}>
+              Cancelar
+            </button>
+          </>
+        ) : (
+          <>
+            <button
+              type="button"
+              className="btn btn--ghost"
+              onClick={startEditing}
+              data-cy={`edit-${todo.id}`}
+            >
+              Editar
+            </button>
+            <button type="button" className="btn btn--ghost" onClick={() => onDelete(todo.id)}>
+              Eliminar
+            </button>
+          </>
+        )}
+      </div>
     </li>
   );
 }

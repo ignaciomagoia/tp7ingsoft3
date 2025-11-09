@@ -1,50 +1,75 @@
-const API = '**/api/todos*';
+const TODOS_API = '**/todos*';
+const LOGIN_API = '**/login';
+const USER = { email: 'cypress@example.com', password: 'superSecret123' };
+
+const loginAndLoad = (initialTodos = []) => {
+  cy.intercept('POST', LOGIN_API, {
+    statusCode: 200,
+    body: { message: 'Inicio de sesión exitoso' },
+  }).as('login');
+
+  cy.intercept('GET', TODOS_API, {
+    statusCode: 200,
+    body: { todos: initialTodos },
+  }).as('loadTodos');
+
+  cy.visit('/');
+
+  cy.get('input[aria-label="Email"]').clear().type(USER.email);
+  cy.get('input[aria-label="Contraseña"]').clear().type(USER.password);
+  cy.contains('button', /Iniciar sesión/i).click();
+
+  cy.wait('@login');
+  cy.wait('@loadTodos');
+};
 
 describe('Todos – flujos principales', () => {
-  beforeEach(() => {
-    cy.intercept('GET', API, { statusCode: 200, body: [] }).as('getTodos');
-    cy.visit('/');
-    cy.wait('@getTodos');
-  });
-
   it('Crear: agrega una tarea y se ve en la lista', () => {
-    cy.intercept('POST', '**/api/todos', (req) => {
+    loginAndLoad([]);
+
+    cy.intercept('POST', '**/todos', (req) => {
       expect(req.body.title).to.contain('Comprar pan');
-      req.reply({ statusCode: 201, body: { id: '1', title: req.body.title, done: false } });
+      req.reply({
+        statusCode: 201,
+        body: { todo: { id: '1', title: req.body.title, completed: false } },
+      });
     }).as('createTodo');
 
-    cy.get('[data-cy=todo-input], input[name="todo"], input[placeholder*="todo" i]').first().type('Comprar pan');
-    cy.get('[data-cy=add-btn], button:contains("Agregar"), button:contains("Add")').first().click();
+    cy.get('[data-cy=todo-input]').type('Comprar pan');
+    cy.get('[data-cy=add-btn]').click();
 
     cy.wait('@createTodo');
-    cy.contains('[data-cy=todo-item], li', 'Comprar pan').should('be.visible');
+    cy.contains('[data-cy=todo-item]', 'Comprar pan').should('be.visible');
   });
 
   it('Editar: modifica el título de una tarea existente', () => {
-    cy.intercept('GET', API, { statusCode: 200, body: [{ id: '10', title: 'Original', done: false }] }).as('seed');
-    cy.visit('/');
-    cy.wait('@seed');
+    loginAndLoad([{ id: '10', title: 'Original', completed: false }]);
 
-    cy.intercept('PUT', '**/api/todos/10', (req) => {
+    cy.intercept('PUT', '**/todos/10', (req) => {
       expect(req.body.title).to.eq('Editada');
-      req.reply({ statusCode: 200, body: { id: '10', title: 'Editada', done: false } });
+      req.reply({
+        statusCode: 200,
+        body: { todo: { id: '10', title: 'Editada', completed: false } },
+      });
     }).as('updateTodo');
 
-    cy.get('[data-cy=edit-10], button[id*="edit-10"], button:contains("Editar")').first().click();
-    cy.get('[data-cy=todo-input], input[name="todo"]').clear().type('Editada');
-    cy.get('[data-cy=save-10], button[id*="save-10"], button:contains("Guardar")').first().click();
+    cy.get('[data-cy=edit-10]').click();
+    cy.get('[data-cy="edit-input-10"]').clear().type('Editada');
+    cy.get('[data-cy=save-10]').click();
 
     cy.wait('@updateTodo');
-    cy.contains('[data-cy=todo-item], li', 'Editada').should('be.visible');
+    cy.contains('[data-cy=todo-item]', 'Editada').should('be.visible');
   });
 
   it('Error: muestra feedback cuando la API falla', () => {
-    cy.intercept('POST', '**/api/todos', { statusCode: 500, body: { message: 'Boom' } }).as('createFail');
+    loginAndLoad([]);
 
-    cy.get('[data-cy=todo-input], input[name="todo"]').type('Falla controlada');
-    cy.get('[data-cy=add-btn], button:contains("Agregar"), button:contains("Add")').click();
+    cy.intercept('POST', '**/todos', { statusCode: 500, body: { error: 'Boom' } }).as('createFail');
+
+    cy.get('[data-cy=todo-input]').type('Falla controlada');
+    cy.get('[data-cy=add-btn]').click();
     cy.wait('@createFail');
 
-    cy.contains(/error|falló|failed|intente|try again/i).should('be.visible');
+    cy.contains(/boom|error|falló|failed|intente|try again/i).should('be.visible');
   });
 });
