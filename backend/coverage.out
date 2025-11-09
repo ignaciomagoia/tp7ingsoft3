@@ -1,4 +1,16 @@
 mode: set
+github.com/ignaciomagoia/tp6ingdesoft/backend/main.go:13.13,17.20 3 0
+github.com/ignaciomagoia/tp6ingdesoft/backend/main.go:17.20,19.3 1 0
+github.com/ignaciomagoia/tp6ingdesoft/backend/main.go:21.2,22.18 2 0
+github.com/ignaciomagoia/tp6ingdesoft/backend/main.go:22.18,24.3 1 0
+github.com/ignaciomagoia/tp6ingdesoft/backend/main.go:26.2,27.16 2 0
+github.com/ignaciomagoia/tp6ingdesoft/backend/main.go:27.16,29.3 1 0
+github.com/ignaciomagoia/tp6ingdesoft/backend/main.go:30.2,30.15 1 0
+github.com/ignaciomagoia/tp6ingdesoft/backend/main.go:30.15,32.3 1 0
+github.com/ignaciomagoia/tp6ingdesoft/backend/main.go:34.2,48.16 10 0
+github.com/ignaciomagoia/tp6ingdesoft/backend/main.go:48.16,50.3 1 0
+github.com/ignaciomagoia/tp6ingdesoft/backend/main.go:52.2,52.47 1 0
+github.com/ignaciomagoia/tp6ingdesoft/backend/main.go:52.47,54.3 1 0
 github.com/ignaciomagoia/tp6ingdesoft/backend/internal/handlers/auth_handler.go:18.63,20.2 1 1
 github.com/ignaciomagoia/tp6ingdesoft/backend/internal/handlers/auth_handler.go:28.48,30.51 2 1
 github.com/ignaciomagoia/tp6ingdesoft/backend/internal/handlers/auth_handler.go:30.51,33.3 2 0
@@ -153,15 +165,3 @@ github.com/ignaciomagoia/tp6ingdesoft/backend/internal/services/user_service.go:
 github.com/ignaciomagoia/tp6ingdesoft/backend/internal/services/user_service.go:144.56,146.2 1 1
 github.com/ignaciomagoia/tp6ingdesoft/backend/internal/services/utils.go:6.42,8.2 1 1
 github.com/ignaciomagoia/tp6ingdesoft/backend/internal/services/utils.go:11.41,13.2 1 1
-github.com/ignaciomagoia/tp6ingdesoft/backend/main.go:13.13,17.20 3 0
-github.com/ignaciomagoia/tp6ingdesoft/backend/main.go:17.20,19.3 1 0
-github.com/ignaciomagoia/tp6ingdesoft/backend/main.go:21.2,22.18 2 0
-github.com/ignaciomagoia/tp6ingdesoft/backend/main.go:22.18,24.3 1 0
-github.com/ignaciomagoia/tp6ingdesoft/backend/main.go:26.2,27.16 2 0
-github.com/ignaciomagoia/tp6ingdesoft/backend/main.go:27.16,29.3 1 0
-github.com/ignaciomagoia/tp6ingdesoft/backend/main.go:30.2,30.15 1 0
-github.com/ignaciomagoia/tp6ingdesoft/backend/main.go:30.15,32.3 1 0
-github.com/ignaciomagoia/tp6ingdesoft/backend/main.go:34.2,48.16 10 0
-github.com/ignaciomagoia/tp6ingdesoft/backend/main.go:48.16,50.3 1 0
-github.com/ignaciomagoia/tp6ingdesoft/backend/main.go:52.2,52.47 1 0
-github.com/ignaciomagoia/tp6ingdesoft/backend/main.go:52.47,54.3 1 0

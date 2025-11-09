@@ -88,3 +88,18 @@ jobs:
           echo "✅ Backend coverage y tests completados."
           echo "✅ Frontend coverage y tests completados."
           echo "Artifacts disponibles para descarga desde GitHub Actions."
+
+sonarcloud-analysis:
+  name: SonarCloud Analysis
+  needs: [backend-tests, frontend-tests]
+  runs-on: ubuntu-latest
+
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: SonarCloud Scan
+      uses: SonarSource/sonarcloud-github-action@v2
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
